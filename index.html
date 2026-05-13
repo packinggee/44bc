@@ -868,17 +868,163 @@
     transform: translateY(0);
   }
 
-  /* RESPONSIVE */
-  @media (max-width: 900px) {
-    nav { padding: 16px 24px; }
-    .nav-links { display: none; }
-    section { padding: 80px 24px; }
-    .about-grid, .why-columns { grid-template-columns: 1fr; gap: 40px; }
-    .details-grid { grid-template-columns: 1fr; }
-    .about-image-wrap { order: -1; }
-    footer { padding: 40px 24px; flex-direction: column; align-items: flex-start; }
-    .mint-box { padding: 40px 24px; }
+ /* RESPONSIVE */
+@media (max-width: 1200px) {
+  .hero-content {
+    padding: 120px 30px 80px;
   }
+
+  .about-grid,
+  .why-columns {
+    gap: 60px;
+  }
+
+  .details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  nav {
+    padding: 16px 24px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  section {
+    padding: 80px 24px;
+  }
+
+  .hero-content {
+    padding: 120px 20px 80px;
+  }
+
+  .hero-divider::before,
+  .hero-divider::after {
+    width: 70px;
+  }
+
+  .about-grid,
+  .why-columns {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-image-wrap {
+    order: -1;
+  }
+
+  .mint-box {
+    padding: 40px 24px;
+  }
+
+  .mint-facts {
+    flex-wrap: wrap;
+  }
+
+  .mint-fact {
+    min-width: 50%;
+  }
+
+  footer {
+    padding: 40px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-year {
+    font-size: clamp(4rem, 20vw, 7rem);
+  }
+
+  .hero-subtitle {
+    letter-spacing: 4px;
+    font-size: 0.65rem;
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    padding: 16px 24px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .task-item {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .task-status {
+    margin-top: 0;
+  }
+
+  .mint-facts {
+    flex-direction: column;
+  }
+
+  .mint-fact {
+    width: 100%;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .hero-divider {
+    gap: 10px;
+  }
+
+  .hero-divider::before,
+  .hero-divider::after {
+    width: 40px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-content {
+    padding: 110px 16px 70px;
+  }
+
+  section {
+    padding: 70px 16px;
+  }
+
+  .mint-box {
+    padding: 30px 18px;
+  }
+
+  .detail-card,
+  .why-block {
+    padding: 30px 20px;
+  }
+
+  .task-input {
+    padding: 12px 16px;
+  }
+}
 
   /* SPECIAL ROMAN BORDER TOP */
   .border-top-roman {
