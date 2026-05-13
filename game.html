@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Arena — 44BC</title>
+<link rel="preconnect" href="fonts.googleapis.com">
+<link rel="preconnect" href="fonts.gstatic.com" crossorigin>
+<link href="fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #8B6914;
+    --purple: #4A1F6B;
+    --purple-deep: #2A0F40;
+    --parchment: #F2E8D0;
+    --stone: #2C2318;
+    --stone-mid: #4A3D2E;
+    --stone-light: #7A6848;
+    --ash: #1A1208;
+    --smoke: #C8B898;
+    --text-bright: #F5ECD4;
+    --text-dim: #A8956A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ash);
+    color: var(--text-bright);
+    font-family: 'EB Garamond', serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(10,7,2,0.97), transparent);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+
+  .nav-logo {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-decoration: none;
+  }
+
+  .nav-back {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: var(--smoke);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-back:hover { color: var(--gold); }
+
+  /* ARENA HEADER */
+  .arena-header {
+    padding: 140px 60px 60px;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(74,31,107,0.35) 0%, transparent 70%),
+      linear-gradient(180deg, #0A0703, var(--ash));
+  }
+
+  .arena-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .arena-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 900;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .arena-title span { color: var(--gold); }
+
+  .arena-sub {
+    font-size: 1.15rem;
+    color: var(--smoke);
+    font-style: italic;
+    max-width: 500px;
+    margin: 0 auto 50px;
+    line-height: 1.8;
+  }
+
+  /* GAME CONTAINER */
+  .game-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 40px 120px;
+  }
+
+  /* SCOREBOARD */
+  .scoreboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 40px;
+  }
+
+  .score-cell {
+    background: rgba(201,168,76,0.04);
+    border: 1px solid rgba(201,168,76,0.12);
+    padding: 24px;
+    text-align: center;
+  }
+
+  .score-val {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.2rem;
+    color: var(--gold);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .score-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    color: var(--stone-light);
+    text-transform: uppercase;
+  }
+
+  /* GAME SCREEN */
+  .screen {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* START SCREEN */
+  .start-box {
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 70px 60px;
+    text-align: center;
+    position: relative;
+    background: rgba(201,168,76,0.02);
+  }
+
+  .start-box::before, .start-box::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .start-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .start-box::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+  .start-icon {
+    font-size: 4rem;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .start-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .start-desc {
+    font-size: 1.1rem;
+    color: var(--smoke);
+    font-style: italic;
+    line-height: 1.9;
+    max-width: 500px;
+    margin: 0 auto 40px;
+  }
+
+  .mode-select {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+
+  .mode-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--smoke);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .mode-btn.selected, .mode-btn:hover {
+    background: rgba(201,168,76,0.14);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .btn-gold {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 18px 56px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-dark));
+    color: var(--ash);
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: all 0.3s;
+    font-weight: 600;
+  }
+
+  .btn-gold:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
+    box-shadow: 0 6px 30px rgba(201,168,76,0.3);
+  }
+
+  /* QUESTION SCREEN */
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+  }
+
+  .q-num {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    color: var(--stone-light);
+    text-transform: uppercase;
+  }
+
+  .q-timer {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .q-timer.danger { color: #E07070; animation: pulse 0.5s ease infinite alternate; }
+
+  @keyframes pulse {
+    from { text-shadow: none; }
+    to { text-shadow: 0 0 20px rgba(224,112,112,0.6); }
+  }
+
+  .q-category {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    color: var(--purple-light, #9B5FD0);
+    text-transform: uppercase;
+    background: rgba(74,31,107,0.2);
+    border: 1px solid rgba(74,31,107,0.4);
+    padding: 5px 14px;
+  }
+
+  .q-progress {
+    height: 3px;
+    background: rgba(201,168,76,0.1);
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .q-progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--gold-dark), var(--gold));
+    transition: width 0.4s;
+  }
+
+  .q-text {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    line-height: 1.6;
+    color: var(--text-bright);
+    margin-bottom: 40px;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .choice-btn {
+    padding: 22px 20px;
+    background: rgba(201,168,76,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    color: var(--smoke);
+    font-family: 'EB Garamond', serif;
+    font-size: 1.1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    line-height: 1.4;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    background: rgba(201,168,76,0.1);
+    border-color: rgba(201,168,76,0.4);
+    color: var(--text-bright);
+    transform: translateX(4px);
+  }
+
+  .choice-btn.correct {
+    background: rgba(100,200,100,0.1);
+    border-color: rgba(100,200,100,0.5);
+    color: #90E090;
+  }
+
+  .choice-btn.wrong {
+    background: rgba(200,80,80,0.1);
+    border-color: rgba(200,80,80,0.4);
+    color: #E07070;
+  }
+
+  .choice-btn:disabled { cursor: not-allowed; }
+
+  .choice-letter {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    min-width: 24px;
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 4px 7px;
+    text-align: center;
+  }
+
+  .answer-feedback {
+    text-align: center;
+    margin-top: 30px;
+    min-height: 60px;
+    padding: 20px;
+  }
+
+  .feedback-correct {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 3px;
+    color: #90E090;
+    text-transform: uppercase;
+  }
+
+  .feedback-wrong {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: #E07070;
+  }
+
+  .fact-text {
+    font-size: 1rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
+  /* RESULTS SCREEN */
+  .results-box {
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 70px 60px;
+    text-align: center;
+    position: relative;
+    background: rgba(201,168,76,0.02);
+  }
+
+  .results-box::before, .results-box::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .results-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .results-box::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+  .results-rank {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+  }
+
+  .results-score-big {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(3rem, 12vw, 7rem);
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 60px rgba(201,168,76,0.3);
+    margin-bottom: 8px;
+  }
+
+  .results-out-of {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    color: var(--stone-light);
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+
+  .results-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+  }
+
+  .results-desc {
+    font-size: 1.1rem;
+    color: var(--smoke);
+    font-style: italic;
+    max-width: 450px;
+    margin: 0 auto 40px;
+    line-height: 1.8;
+  }
+
+  .results-btns {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-outline {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 16px 40px;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.35);
+    cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-outline:hover { background: rgba(201,168,76,0.08); }
+
+  /* DIVIDER ORNAMENT */
+  .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 40px 0;
+  }
+  .ornament-line { flex: 1; max-width: 200px; height: 1px; background: linear-gradient(to right, transparent, rgba(201,168,76,0.25)); }
+  .ornament-line.rev { background: linear-gradient(to left, transparent, rgba(201,168,76,0.25)); }
+  .ornament span { color: rgba(201,168,76,0.3); font-size: 1rem; }
+
+  @media (max-width: 640px) {
+    nav { padding: 16px 20px; }
+    .arena-header { padding: 100px 24px 40px; }
+    .game-wrap { padding: 0 20px 80px; }
+    .start-box, .results-box { padding: 40px 24px; }
+    .choices { grid-template-columns: 1fr; }
+    .scoreboard { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">XLIV·BC</a>
+  <a href="index.html" class="nav-back">← Return to Senate</a>
+</nav>
+
+<div class="arena-header">
+  <p class="arena-eyebrow">⚔ Prove Your Worth ⚔</p>
+  <h1 class="arena-title">The <span>Arena</span></h1>
+  <p class="arena-sub">Answer ten questions about ancient Rome and the era of Caesar. Only the wise shall emerge victorious.</p>
+</div>
+
+<div class="game-wrap">
+  <div class="scoreboard">
+    <div class="score-cell">
+      <span class="score-val" id="scoreDisplay">0</span>
+      <span class="score-label">Glory</span>
+    </div>
+    <div class="score-cell">
+      <span class="score-val" id="streakDisplay">0</span>
+      <span class="score-label">Streak</span>
+    </div>
+    <div class="score-cell">
+      <span class="score-val" id="highScoreDisplay">0</span>
+      <span class="score-label">Record</span>
+    </div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div class="screen active" id="screenStart">
+    <div class="start-box">
+      <span class="start-icon">🏛</span>
+      <div class="start-title">Enter the Arena</div>
+      <p class="start-desc">Ten questions. Roman history. Only a true citizen of 44BC can claim the laurel. Choose your difficulty, senator.</p>
+      <div class="mode-select">
+        <button class="mode-btn selected" onclick="selectDifficulty('citizen')">Citizen</button>
+        <button class="mode-btn" onclick="selectDifficulty('senator')">Senator</button>
+        <button class="mode-btn" onclick="selectDifficulty('imperator')">Imperator</button>
+      </div>
+      <button class="btn-gold" onclick="startGame()">Enter the Arena</button>
+    </div>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div class="screen" id="screenGame">
+    <div class="q-meta">
+      <span class="q-num" id="qNum">Question I of X</span>
+      <span class="q-category" id="qCategory">History</span>
+      <span class="q-timer" id="qTimer">20</span>
+    </div>
+    <div class="q-progress">
+      <div class="q-progress-fill" id="qProgress"></div>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <div class="choices" id="choicesGrid"></div>
+    <div class="answer-feedback" id="feedback"></div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="screen" id="screenResults">
+    <div class="results-box">
+      <div class="results-rank" id="resultsRank">Citizen</div>
+      <div class="results-score-big" id="resultsBig">0</div>
+      <div class="results-out-of" id="resultsOf">out of 10</div>
+      <div class="results-title" id="resultsTitle">The Senate Remembers</div>
+      <p class="results-desc" id="resultsDesc">Every battle teaches a lesson. Rome was not built in a day.</p>
+      <div class="ornament">
+        <div class="ornament-line"></div>
+        <span>⚔</span>
+        <div class="ornament-line rev"></div>
+      </div>
+      <div class="results-btns">
+        <button class="btn-gold" onclick="startGame()">Fight Again</button>
+        <a href="index.html" class="btn-outline">Return to Senate</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  { q: "In which year was Julius Caesar assassinated?", a: 1, choices: ["43 BC", "44 BC", "45 BC", "46 BC"], cat: "History", fact: "Caesar was assassinated on March 15, 44 BC — the Ides of March." },
+  { q: "What was the name of the group of senators who conspired to kill Caesar?", a: 2, choices: ["The Praetorian Guard", "The Optimates", "The Liberatores", "The Populares"], cat: "Politics", fact: "The Liberatores believed they were freeing Rome from a would-be king." },
+  { q: "Who famously said 'Et tu, Brute?' according to Shakespeare?", a: 0, choices: ["Julius Caesar", "Mark Antony", "Cicero", "Cassius"], cat: "Culture", fact: "Caesar's last words in Shakespeare's play — though historically disputed." },
+  { q: "What title did Julius Caesar hold that was NOT 'king'?", a: 3, choices: ["Consul", "Dictator Perpetuo", "Pontifex Maximus", "All of the above"], cat: "Politics", fact: "Caesar held all three — the Romans were deeply opposed to the title of king." },
+  { q: "Which river did Caesar famously cross to trigger a civil war?", a: 1, choices: ["The Tiber", "The Rubicon", "The Po", "The Rhine"], cat: "Military", fact: "'The die is cast' — Caesar crossed the Rubicon in 49 BC, making war inevitable." },
+  { q: "Who was Caesar's greatest rival and eventual ally in the First Triumvirate?", a: 2, choices: ["Cicero", "Brutus", "Pompey", "Crassus"], cat: "History", fact: "Caesar, Pompey, and Crassus formed the First Triumvirate around 60 BC." },
+  { q: "What does the Roman motto 'SPQR' stand for?", a: 0, choices: ["Senatus Populusque Romanus", "Semper Pugna Quid Romanus", "Sol Patria Que Roma", "Senatus Pro Quirites Romani"], cat: "Culture", fact: "SPQR — the Senate and People of Rome — a symbol of the Republic." },
+  { q: "In which modern country did Julius Caesar wage his famous Gallic Wars?", a: 3, choices: ["Italy", "Spain", "Germany", "France"], cat: "Military", fact: "The Gallic Wars (58–50 BC) were fought across what is now modern France." },
+  { q: "Who was the Egyptian queen with whom Julius Caesar had a son?", a: 1, choices: ["Nefertiti", "Cleopatra VII", "Hatshepsut", "Berenice IV"], cat: "History", fact: "Caesarion, their son, was reportedly the last pharaoh of ancient Egypt." },
+  { q: "Which month of the year was renamed after Julius Caesar?", a: 2, choices: ["June", "August", "July", "September"], cat: "Culture", fact: "July (Julius) was renamed in Caesar's honor — August was later renamed for Augustus." },
+  { q: "What was the primary weapon of the Roman legionary called?", a: 0, choices: ["Gladius", "Spatha", "Pilum", "Falx"], cat: "Military", fact: "The gladius — the short stabbing sword — gave its name to gladiators themselves." },
+  { q: "What was the name of Caesar's heir and adopted son?", a: 3, choices: ["Lepidus", "Mark Antony", "Cassius", "Octavian"], cat: "Politics", fact: "Octavian later became Augustus, the first Roman Emperor, after defeating Antony." },
+  { q: "What structure was Rome's largest entertainment venue for chariot races?", a: 1, choices: ["The Colosseum", "The Circus Maximus", "The Forum", "The Pantheon"], cat: "Culture", fact: "The Circus Maximus could hold up to 250,000 spectators at its peak." },
+  { q: "How many senators participated in the assassination of Caesar?", a: 2, choices: ["12", "20", "23", "44"], cat: "History", fact: "Historical accounts suggest around 23 senators stabbed Caesar that day." },
+  { q: "What famous Roman road connected Rome to Brindisi?", a: 0, choices: ["Via Appia", "Via Flaminia", "Via Aurelia", "Via Emilia"], cat: "Military", fact: "The Appian Way, begun in 312 BC, was the queen of Roman roads." },
+];
+
+let difficulty = 'citizen';
+let questions = [];
+let currentQ = 0;
+let score = 0;
+let streak = 0;
+let highScore = parseInt(localStorage.getItem('44bc_hs') || '0');
+let timer = null;
+let timeLeft = 20;
+let answered = false;
+
+const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+const DIFF = { citizen: 20, senator: 15, imperator: 10 };
+
+document.getElementById('highScoreDisplay').textContent = highScore;
+
+function selectDifficulty(d) {
+  difficulty = d;
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent.toLowerCase() === d);
+  });
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  questions = shuffle(ALL_QUESTIONS).slice(0, 10);
+  currentQ = 0;
+  score = 0;
+  streak = 0;
+  updateScoreboard();
+  showScreen('screenGame');
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  const q = questions[currentQ];
+  document.getElementById('qNum').textContent = `Question ${ROMAN[currentQ]} of X`;
+  document.getElementById('qCategory').textContent = q.cat;
+  document.getElementById('qProgress').style.width = `${(currentQ / 10) * 100}%`;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('feedback').innerHTML = '';
+
+  const grid = document.getElementById('choicesGrid');
+  grid.innerHTML = '';
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-letter">${ROMAN[i]}</span>${c}`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  timeLeft = DIFF[difficulty];
+  updateTimer();
+  clearInterval(timer);
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      timeoutAnswer();
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const el = document.getElementById('qTimer');
+  el.textContent = timeLeft;
+  el.className = 'q-timer' + (timeLeft <= 5 ? ' danger' : '');
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timer);
+
+  const q = questions[currentQ];
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const isCorrect = idx === q.a;
+  btns[idx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) btns[q.a].classList.add('correct');
+
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    score++;
+    streak++;
+    fb.innerHTML = `<div class="feedback-correct">✓ Gloria! Correct!</div><div class="fact-text">${q.fact}</div>`;
+  } else {
+    streak = 0;
+    fb.innerHTML = `<div class="feedback-wrong">✗ Incorrect — ${q.choices[q.a]}</div><div class="fact-text">${q.fact}</div>`;
+  }
+
+  updateScoreboard();
+  setTimeout(nextQuestion, 2200);
+}
+
+function timeoutAnswer() {
+  if (answered) return;
+  answered = true;
+  const q = questions[currentQ];
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[q.a].classList.add('correct');
+  streak = 0;
+  document.getElementById('feedback').innerHTML = `<div class="feedback-wrong">⏱ Time expired — ${q.choices[q.a]}</div><div class="fact-text">${q.fact}</div>`;
+  updateScoreboard();
+  setTimeout(nextQuestion, 2200);
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= 10) {
+    endGame();
+  } else {
+    showQuestion();
+  }
+}
+
+function updateScoreboard() {
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('streakDisplay').textContent = streak;
+  document.getElementById('highScoreDisplay').textContent = highScore;
+}
+
+function endGame() {
+  clearInterval(timer);
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('44bc_hs', highScore);
+  }
+  updateScoreboard();
+
+  const ranks = [
+    { min: 10, rank: 'Imperator', title: 'Hail, Imperator!', desc: 'Perfect. The gods themselves would bow. You are the eternal ruler of Rome.' },
+    { min: 8, rank: 'Senator', title: 'Hail, Senator!', desc: 'The senate applauds. Your wisdom and knowledge of Rome are without equal among mortals.' },
+    { min: 6, rank: 'Centurion', title: 'Well fought, Centurion.', desc: 'You have proven your worth on the battlefield of knowledge. Rome rises with you.' },
+    { min: 4, rank: 'Citizen', title: 'A worthy attempt, Citizen.', desc: 'The Forum remembers your effort. Study the scrolls and return to claim your laurels.' },
+    { min: 0, rank: 'Plebeian', title: 'The Arena humbles you.', desc: 'Every legend began with a loss. Return to the scrolls, and try again.' },
+  ];
+
+  const r = ranks.find(x => score >= x.min);
+
+  document.getElementById('resultsRank').textContent = r.rank;
+  document.getElementById('resultsBig').textContent = score;
+  document.getElementById('resultsOf').textContent = `out of 10 — ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Mode`;
+  document.getElementById('resultsTitle').textContent = r.title;
+  document.getElementById('resultsDesc').textContent = r.desc;
+
+  showScreen('screenResults');
+}
+</script>
+</body>
+</html>

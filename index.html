@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>44BC — The Eternal Collection</title>
+<link rel="preconnect" href="fonts.googleapis.com">
+<link rel="preconnect" href="fonts.gstatic.com" crossorigin>
+<link href="fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #8B6914;
+    --purple: #4A1F6B;
+    --purple-deep: #2A0F40;
+    --purple-light: #7B3FA0;
+    --parchment: #F2E8D0;
+    --parchment-dark: #D4C4A0;
+    --stone: #2C2318;
+    --stone-mid: #4A3D2E;
+    --stone-light: #7A6848;
+    --ash: #1A1208;
+    --smoke: #C8B898;
+    --text-bright: #F5ECD4;
+    --text-dim: #A8956A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ash);
+    color: var(--text-bright);
+    font-family: 'EB Garamond', serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(10,7,2,0.95), transparent);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+
+  .nav-logo {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px rgba(201,168,76,0.4);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--smoke);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--gold-light); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(74,31,107,0.25) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 60%),
+      linear-gradient(170deg, #1A1208 0%, #0E0B06 50%, #1A1208 100%);
+  }
+
+  /* Animated fragments */
+  .fragment {
+    position: absolute;
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.1);
+    animation: fragmentFloat linear infinite;
+  }
+
+  @keyframes fragmentFloat {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 120px 40px 80px;
+    max-width: 900px;
+  }
+
+  .hero-year {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(5rem, 18vw, 14rem);
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(201,168,76,0.4);
+    line-height: 0.9;
+    letter-spacing: -2px;
+    position: relative;
+    display: inline-block;
+    animation: heroReveal 1.5s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-year::after {
+    content: '44BC';
+    position: absolute;
+    inset: 0;
+    color: var(--gold);
+    -webkit-text-stroke: 0;
+    clip-path: inset(0 100% 0 0);
+    animation: textReveal 2s 0.5s ease forwards;
+    text-shadow: 0 0 80px rgba(201,168,76,0.3);
+  }
+
+  @keyframes heroReveal {
+    to { opacity: 1; }
+  }
+
+  @keyframes textReveal {
+    to { clip-path: inset(0 0% 0 0); }
+  }
+
+  .hero-divider {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px 0;
+    animation: fadeUp 1s 1.5s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-divider::before, .hero-divider::after {
+    content: '';
+    height: 1px;
+    width: 120px;
+    background: linear-gradient(to right, transparent, var(--gold));
+  }
+
+  .hero-divider::after {
+    background: linear-gradient(to left, transparent, var(--gold));
+  }
+
+  .hero-divider span {
+    color: var(--gold);
+    font-size: 1.2rem;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    letter-spacing: 8px;
+    color: var(--smoke);
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    animation: fadeUp 1s 1.8s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-desc {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    line-height: 1.9;
+    color: var(--text-dim);
+    font-style: italic;
+    max-width: 600px;
+    margin: 0 auto 50px;
+    animation: fadeUp 1s 2s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 1s 2.2s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn-primary {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 18px 48px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-dark));
+    color: var(--ash);
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(201,168,76,0.3);
+  }
+
+  .btn-secondary {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 18px 48px;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.4);
+    cursor: pointer;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(201,168,76,0.1);
+    border-color: var(--gold);
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeUp 1s 2.5s ease forwards, scrollBob 2s 3.5s ease-in-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes scrollBob {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  .scroll-indicator span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    color: var(--stone-light);
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+
+  /* SECTION BASE */
+  section {
+    position: relative;
+    padding: 120px 60px;
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 30px;
+    color: var(--text-bright);
+  }
+
+  /* ABOUT SECTION */
+  .about {
+    background:
+      radial-gradient(ellipse 100% 50% at 80% 50%, rgba(74,31,107,0.12) 0%, transparent 60%),
+      linear-gradient(180deg, var(--ash) 0%, #120E07 50%, var(--ash) 100%);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+  }
+
+  .about-text p {
+    font-size: 1.15rem;
+    line-height: 2;
+    color: var(--smoke);
+    margin-bottom: 24px;
+  }
+
+  .about-text p em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+
+  .about-image-wrap {
+    position: relative;
+  }
+
+  .about-image-wrap img {
+    width: 100%;
+    filter: sepia(20%) contrast(110%);
+    clip-path: polygon(0 0, 90% 0, 100% 10%, 100% 100%, 10% 100%, 0 90%);
+  }
+
+  .about-image-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, var(--gold), transparent 50%, var(--purple));
+    clip-path: polygon(0 0, 90% 0, 100% 10%, 100% 100%, 10% 100%, 0 90%);
+    z-index: -1;
+  }
+
+  .about-image-wrap::after {
+    content: 'MMXXV';
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4rem;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(201,168,76,0.15);
+    pointer-events: none;
+  }
+
+  /* DETAILS GRID */
+  .details {
+    background: linear-gradient(180deg, #120E07 0%, var(--ash) 100%);
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .detail-card {
+    padding: 50px 40px;
+    background: rgba(201,168,76,0.03);
+    border: 1px solid rgba(201,168,76,0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+  }
+
+  .detail-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .detail-card:hover::before { transform: translateX(0); }
+  .detail-card:hover { background: rgba(201,168,76,0.06); }
+
+  .detail-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 12px;
+    text-shadow: 0 0 40px rgba(201,168,76,0.2);
+  }
+
+  .detail-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    color: var(--stone-light);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .detail-desc {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--smoke);
+  }
+
+  /* WHY SECTION */
+  .why {
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 50%, rgba(74,31,107,0.15) 0%, transparent 70%),
+      linear-gradient(180deg, var(--ash), #120E07);
+  }
+
+  .why-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-top: 60px;
+  }
+
+  .why-block {
+    position: relative;
+    padding: 40px;
+    border-left: 2px solid rgba(201,168,76,0.2);
+  }
+
+  .why-block::before {
+    content: attr(data-num);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 6rem;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(201,168,76,0.08);
+    position: absolute;
+    top: 10px; right: 20px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .why-block h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: var(--gold-light);
+    margin-bottom: 16px;
+  }
+
+  .why-block p {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--smoke);
+  }
+
+  /* MINT SECTION */
+  .mint {
+    background: linear-gradient(180deg, #120E07, var(--ash));
+    text-align: center;
+  }
+
+  .mint-box {
+    max-width: 700px;
+    margin: 60px auto 0;
+    padding: 70px 60px;
+    border: 1px solid rgba(201,168,76,0.2);
+    position: relative;
+    background: rgba(201,168,76,0.02);
+  }
+
+  .mint-box::before, .mint-box::after {
+    content: '';
+    position: absolute;
+    width: 30px; height: 30px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+
+  .mint-box::before {
+    top: -1px; left: -1px;
+    border-width: 2px 0 0 2px;
+  }
+
+  .mint-box::after {
+    bottom: -1px; right: -1px;
+    border-width: 0 2px 2px 0;
+  }
+
+  .mint-status {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 8px 24px;
+    border: 1px solid rgba(201,168,76,0.3);
+    margin-bottom: 30px;
+  }
+
+  .mint-tba {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 20px;
+  }
+
+  .mint-sub {
+    font-size: 1.1rem;
+    color: var(--smoke);
+    font-style: italic;
+    line-height: 1.8;
+    margin-bottom: 40px;
+  }
+
+  .mint-facts {
+    display: flex;
+    gap: 0;
+    margin-bottom: 40px;
+  }
+
+  .mint-fact {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid rgba(201,168,76,0.1);
+  }
+
+  .mint-fact-val {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .mint-fact-key {
+    font-size: 0.75rem;
+    color: var(--stone-light);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* TASKS SECTION */
+  .tasks {
+    background:
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(74,31,107,0.2) 0%, transparent 60%),
+      linear-gradient(180deg, var(--ash), #120E07 50%, var(--ash));
+  }
+
+  .tasks-wrap {
+    max-width: 760px;
+    margin: 60px auto 0;
+  }
+
+  .task-item {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    padding: 30px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    opacity: 0.4;
+    transition: opacity 0.4s;
+  }
+
+  .task-item.active { opacity: 1; }
+  .task-item.completed { opacity: 0.7; }
+
+  .task-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    min-width: 50px;
+    line-height: 1;
+    margin-top: 4px;
+  }
+
+  .task-content { flex: 1; }
+
+  .task-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+  }
+
+  .task-desc {
+    font-size: 0.95rem;
+    color: var(--stone-light);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .task-status {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(201,168,76,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 8px;
+    transition: all 0.3s;
+  }
+
+  .task-status.done {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+  }
+
+  .task-input {
+    width: 100%;
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--text-bright);
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem;
+    padding: 14px 20px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .task-input::placeholder { color: var(--stone-light); }
+  .task-input:focus { border-color: rgba(201,168,76,0.5); }
+
+  .task-btn {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 12px 36px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--ash);
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: all 0.3s;
+  }
+
+  .task-btn:hover { opacity: 0.85; }
+  .task-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .task-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 12px 36px;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.35);
+    cursor: pointer;
+    text-decoration: none;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: all 0.3s;
+    margin-top: 12px;
+  }
+
+  .task-link:hover { background: rgba(201,168,76,0.1); }
+
+  .validation-msg {
+    font-size: 0.85rem;
+    padding: 10px 16px;
+    margin-top: 10px;
+    display: none;
+  }
+
+  .validation-msg.error {
+    display: block;
+    background: rgba(180,40,40,0.1);
+    border: 1px solid rgba(180,40,40,0.3);
+    color: #E07070;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+  }
+
+  .validation-msg.success {
+    display: block;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-light);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+  }
+
+  /* FINAL MESSAGE */
+  .final-message {
+    display: none;
+    text-align: center;
+    padding: 80px 40px;
+    position: relative;
+  }
+
+  .final-message.show { display: block; }
+
+  .final-message::before {
+    content: 'SPQR';
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 8rem;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(201,168,76,0.06);
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .final-icon {
+    font-size: 3rem;
+    margin-bottom: 24px;
+  }
+
+  .final-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .final-text {
+    font-size: 1.2rem;
+    color: var(--smoke);
+    font-style: italic;
+    line-height: 1.8;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 60px;
+    border-top: 1px solid rgba(201,168,76,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-logo {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    letter-spacing: 4px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--stone-light);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--gold); }
+
+  .footer-copy {
+    font-size: 0.85rem;
+    color: var(--stone-light);
+    font-style: italic;
+  }
+
+  /* ROMAN ORNAMENT */
+  .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 40px 0;
+  }
+
+  .ornament-line {
+    flex: 1;
+    max-width: 200px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3));
+  }
+
+  .ornament-line.rev {
+    background: linear-gradient(to left, transparent, rgba(201,168,76,0.3));
+  }
+
+  .ornament-sym {
+    font-size: 1.2rem;
+    color: rgba(201,168,76,0.4);
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .about-grid, .why-columns { grid-template-columns: 1fr; gap: 40px; }
+    .details-grid { grid-template-columns: 1fr; }
+    .about-image-wrap { order: -1; }
+    footer { padding: 40px 24px; flex-direction: column; align-items: flex-start; }
+    .mint-box { padding: 40px 24px; }
+  }
+
+  /* SPECIAL ROMAN BORDER TOP */
+  .border-top-roman {
+    border-top: 1px solid rgba(201,168,76,0.15);
+    position: relative;
+  }
+
+  .border-top-roman::before {
+    content: '⬥ XLIV ⬥ XLIV ⬥ XLIV ⬥ XLIV ⬥';
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--ash);
+    padding: 0 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 6px;
+    color: rgba(201,168,76,0.25);
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">XLIV·BC</a>
+  <ul class="nav-links">
+    <li><a href="#about">Imperium</a></li>
+    <li><a href="#details">Codex</a></li>
+    <li><a href="#mint">Mint</a></li>
+    <li><a href="#tasks">Enlist</a></li>
+    <li><a href="game.html">Arena</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+
+  <!-- Floating fragments -->
+  <div id="fragments"></div>
+
+  <div class="hero-content">
+    <p class="hero-subtitle">The Eternal NFT Collection</p>
+    <div class="hero-year">44BC</div>
+    <div class="hero-divider"><span>⬥</span></div>
+    <p class="hero-desc">On the Ides of March, an empire fractured. From that fracture, something eternal was born. 444 unique tokens. One blockchain. Infinite history.</p>
+    <div class="hero-cta">
+      <a href="#about" class="btn-primary">Enter the Senate</a>
+      <a href="game.html" class="btn-secondary">Play the Arena</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Descend</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about border-top-roman" id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p class="section-label">Imperium</p>
+        <h2 class="section-title">What is 44BC?</h2>
+        <p>44BC is a collection born from the most pivotal moment in human history — the assassination of Julius Caesar in 44 BC, the year an empire trembled and the ancient world changed forever.</p>
+        <p>This collection is <em>444 unique, hand-crafted tokens</em> deployed on Ethereum through OpenSea. Every piece is singular — no rares, no commons. In this senate, every senator holds equal standing. Each token is a relic. Each holder, a citizen of the eternal city.</p>
+        <p>We launched 44BC to immortalize that moment of fracture, rebirth, and legacy — translating the raw power of ancient Rome into the permanence of the blockchain.</p>
+        <div class="ornament">
+          <div class="ornament-line"></div>
+          <span class="ornament-sym">⚔</span>
+          <div class="ornament-line rev"></div>
+        </div>
+        <a href="#tasks" class="btn-primary">Claim Your Place</a>
+      </div>
+      <div class="about-image-wrap reveal">
+        <img src="08e95343-8872-4e30-a78f-b50a900054b0.jpeg" alt="44BC NFT Preview" onerror="this.parentNode.style.background='linear-gradient(135deg,#2A0F40,#4A1F6B)'; this.style.display='none'">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DETAILS -->
+<section class="details border-top-roman" id="details">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-label">Codex</p>
+      <h2 class="section-title">The Collection</h2>
+    </div>
+    <div class="details-grid">
+      <div class="detail-card reveal">
+        <div class="detail-num">444</div>
+        <div class="detail-label">Total Supply</div>
+        <div class="detail-desc">444 tokens, each one a unique artifact. No duplicates. No rares. Every senator in this house wields the same eternal power.</div>
+      </div>
+      <div class="detail-card reveal">
+        <div class="detail-num">TBA</div>
+        <div class="detail-label">Mint Price</div>
+        <div class="detail-desc">The price of legacy shall be announced through the scrolls. Follow the official channels so not a single proclamation passes you by.</div>
+      </div>
+      <div class="detail-card reveal">
+        <div class="detail-num">ETH</div>
+        <div class="detail-label">Blockchain</div>
+        <div class="detail-desc">Minted on Ethereum, distributed through OpenSea. The most proven chain for the most permanent art. Built to endure, like Rome itself.</div>
+      </div>
+      <div class="detail-card reveal">
+        <div class="detail-num">∞</div>
+        <div class="detail-label">Uniqueness</div>
+        <div class="detail-desc">Every single token is distinct. No rarity tiers. No common editions. In 44BC, all citizens are equal under the eternal sun of the collection.</div>
+      </div>
+      <div class="detail-card reveal">
+        <div class="detail-num">TBA</div>
+        <div class="detail-label">Mint Date</div>
+        <div class="detail-desc">The Ides draw near. The exact date of launch will be declared through official channels. Prepare your wallets. Prepare your legacy.</div>
+      </div>
+      <div class="detail-card reveal">
+        <div class="detail-num">OS</div>
+        <div class="detail-label">Platform</div>
+        <div class="detail-desc">Launching exclusively through OpenSea, the foremost marketplace for digital artifacts. A fitting colosseum for the eternal.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why border-top-roman" id="why">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-label">The Manifesto</p>
+      <h2 class="section-title">Why 44BC?</h2>
+    </div>
+    <div class="why-columns">
+      <div class="why-block reveal" data-num="I">
+        <h3>History That Endures</h3>
+        <p>44 BC marks the fracture point of an empire. The moment Julius Caesar fell, the ancient world shattered and reformed. We chose this year because great art mirrors great moments — and 44BC is built to last as long as Ethereum itself.</p>
+      </div>
+      <div class="why-block reveal" data-num="II">
+        <h3>True Equality of Rarity</h3>
+        <p>In most collections, rarity defines worth. Not here. 44BC rejects the hierarchy. Every one of the 444 tokens is completely unique — different, but equal. Like citizens of a true republic, each holds the same standing.</p>
+      </div>
+      <div class="why-block reveal" data-num="III">
+        <h3>The Power of 444</h3>
+        <p>444 — the number of deliberate scarcity. Small enough to be truly exclusive. Large enough to build a senate. The digits echo the name, the lore, and the permanence this collection is built upon.</p>
+      </div>
+      <div class="why-block reveal" data-num="IV">
+        <h3>Art With Memory</h3>
+        <p>These are not generative profile pictures. 44BC is a visual artifact collection — each piece crafted with the weight of history behind it. You are not buying a JPEG. You are inheriting a legacy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MINT -->
+<section class="mint border-top-roman" id="mint">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-label" style="justify-content:center">The Gates Open</p>
+      <h2 class="section-title">Mint Information</h2>
+    </div>
+    <div class="mint-box reveal">
+      <div class="mint-status">⚡ Announcement Incoming</div>
+      <div class="mint-tba">Coming Soon</div>
+      <p class="mint-sub">The exact price and date of the 44BC mint will be proclaimed through our official channels. Follow @44_BC_ on X and keep your wallet ready for when the gates open.</p>
+      <div class="mint-facts">
+        <div class="mint-fact">
+          <span class="mint-fact-val">444</span>
+          <span class="mint-fact-key">Supply</span>
+        </div>
+        <div class="mint-fact">
+          <span class="mint-fact-val">TBA</span>
+          <span class="mint-fact-key">Price</span>
+        </div>
+        <div class="mint-fact">
+          <span class="mint-fact-val">ETH</span>
+          <span class="mint-fact-key">Chain</span>
+        </div>
+        <div class="mint-fact">
+          <span class="mint-fact-val">OS</span>
+          <span class="mint-fact-key">Platform</span>
+        </div>
+      </div>
+      <a href="x.com/44_BC_" target="_blank" class="btn-primary">Follow for Updates</a>
+    </div>
+  </div>
+</section>
+
+<!-- TASKS / ENLIST -->
+<section class="tasks border-top-roman" id="tasks">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-label">Enlist in the Senate</p>
+      <h2 class="section-title">Complete Your Trials</h2>
+      <p style="color:var(--smoke);font-size:1.1rem;line-height:1.9;max-width:600px;font-style:italic;">Complete each trial to secure your place on the 44BC registry. Each task must be completed before the next scroll is unsealed.</p>
+    </div>
+
+    <div class="tasks-wrap" id="tasksWrap">
+
+      <!-- TASK 0: Username -->
+      <div class="task-item active" id="task0">
+        <div class="task-num">I</div>
+        <div class="task-content">
+          <div class="task-title">Declare Your Name</div>
+          <div class="task-desc">Enter your X (Twitter) username to begin your enlistment in the 44BC senate.</div>
+          <input type="text" class="task-input" id="usernameInput" placeholder="@your_username">
+          <div class="validation-msg" id="usernameMsg"></div>
+          <button class="task-btn" onclick="submitUsername()">Continue</button>
+        </div>
+        <div class="task-status" id="status0">I</div>
+      </div>
+
+      <!-- TASK 1: Like Post -->
+      <div class="task-item" id="task1">
+        <div class="task-num">II</div>
+        <div class="task-content">
+          <div class="task-title">Like the Sacred Post</div>
+          <div class="task-desc">Like the official @44_BC_ post on X to show your allegiance to the senate.</div>
+          <a href="x.com/44_BC_" target="_blank" class="task-link" onclick="markLiked()">⬥ Like on X</a>
+          <div class="validation-msg" id="likeMsg"></div>
+          <button class="task-btn" id="likeConfirm" onclick="confirmLike()" style="margin-left:12px">I've Liked It</button>
+        </div>
+        <div class="task-status" id="status1">II</div>
+      </div>
+
+      <!-- TASK 2: Follow -->
+      <div class="task-item" id="task2">
+        <div class="task-num">III</div>
+        <div class="task-content">
+          <div class="task-title">Pledge Your Loyalty</div>
+          <div class="task-desc">Follow @44_BC_ on X. Only loyal citizens may hold tokens of the eternal collection.</div>
+          <a href="x.com/44_BC_" target="_blank" class="task-link" onclick="markFollowed()">⬥ Follow @44_BC_</a>
+          <div class="validation-msg" id="followMsg"></div>
+          <button class="task-btn" id="followConfirm" onclick="confirmFollow()">I'm Following</button>
+        </div>
+        <div class="task-status" id="status2">III</div>
+      </div>
+
+      <!-- TASK 3: Comment -->
+      <div class="task-item" id="task3">
+        <div class="task-num">IV</div>
+        <div class="task-content">
+          <div class="task-title">Inscribe Your Words</div>
+          <div class="task-desc">Comment on the 44BC teaser post on X. Leave your mark on the senate floor.</div>
+          <a href="x.com/44_BC_" target="_blank" class="task-link" onclick="markCommented()">⬥ Comment on the Post</a>
+          <div class="validation-msg" id="commentMsg"></div>
+          <button class="task-btn" id="commentConfirm" onclick="confirmComment()">I've Commented</button>
+        </div>
+        <div class="task-status" id="status3">IV</div>
+      </div>
+
+    </div>
+
+    <!-- FINAL MESSAGE -->
+    <div class="final-message" id="finalMessage">
+      <div class="ornament">
+        <div class="ornament-line"></div>
+        <span class="ornament-sym">⚔</span>
+        <div class="ornament-line rev"></div>
+      </div>
+      <div class="final-icon">🏛</div>
+      <div class="final-title">Ave, Senator</div>
+      <p class="final-text">Thank you, your submission will be reviewed soon. The senate has received your name. When the gates of the 44BC mint open, the eternal city will remember you.</p>
+      <div class="ornament">
+        <div class="ornament-line"></div>
+        <span class="ornament-sym">XLIV</span>
+        <div class="ornament-line rev"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">XLIV·BC</div>
+  <ul class="footer-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#details">Collection</a></li>
+    <li><a href="#mint">Mint</a></li>
+    <li><a href="game.html">Arena</a></li>
+    <li><a href="x.com/44_BC_" target="_blank">X / Twitter</a></li>
+    <li><a href="opensea.io" target="_blank">OpenSea</a></li>
+  </ul>
+  <p class="footer-copy">© MMXXVI — 44BC. All rights reserved. <em>Sic transit gloria mundi.</em></p>
+</footer>
+
+<script>
+  // === FRAGMENT ANIMATION ===
+  const container = document.getElementById('fragments');
+  for (let i = 0; i < 18; i++) {
+    const f = document.createElement('div');
+    f.className = 'fragment';
+    const size = Math.random() * 30 + 8;
+    f.style.cssText = `
+      width: ${size}px;
+      height: ${size * (0.4 + Math.random() * 0.8)}px;
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      animation-duration: ${8 + Math.random() * 14}s;
+      animation-delay: ${-Math.random() * 12}s;
+      transform: rotate(${Math.random() * 360}deg);
+    `;
+    container.appendChild(f);
+  }
+
+  // === SCROLL REVEAL ===
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // === TASK LOGIC ===
+  let state = {
+    usernameSubmitted: false,
+    liked: false,
+    likedConfirmed: false,
+    followed: false,
+    followConfirmed: false,
+    commented: false,
+    commentConfirmed: false,
+  };
+
+  function activateTask(id) {
+    const el = document.getElementById('task' + id);
+    if (el) {
+      el.classList.add('active');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function completeTask(id) {
+    const el = document.getElementById('task' + id);
+    const st = document.getElementById('status' + id);
+    if (el) el.classList.add('completed');
+    if (st) { st.classList.add('done'); st.textContent = '✓'; }
+  }
+
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = text; el.className = 'validation-msg ' + type; }
+  }
+
+  function submitUsername() {
+    const val = document.getElementById('usernameInput').value.trim();
+    if (!val || val.length < 2) {
+      showMsg('usernameMsg', 'Enter a valid X username to proceed.', 'error');
+      return;
+    }
+    const clean = val.startsWith('@') ? val : '@' + val;
+    showMsg('usernameMsg', 'Registered: ' + clean + ' — Proceed to the next trial.', 'success');
+    completeTask(0);
+    state.usernameSubmitted = true;
+    setTimeout(() => activateTask(1), 600);
+  }
+
+  function markLiked() { state.liked = true; }
+  function markFollowed() { state.followed = true; }
+  function markCommented() { state.commented = true; }
+
+  function confirmLike() {
+    if (!state.usernameSubmitted) {
+      showMsg('likeMsg', 'Complete the first trial before proceeding.', 'error'); return;
+    }
+    // Simulated validation — in production, use Twitter OAuth
+    showMsg('likeMsg', 'Confirmed. Your allegiance has been noted.', 'success');
+    completeTask(1);
+    state.likedConfirmed = true;
+    setTimeout(() => activateTask(2), 600);
+  }
+
+  function confirmFollow() {
+    if (!state.likedConfirmed) {
+      showMsg('followMsg', 'You must complete the previous trial first.', 'error'); return;
+    }
+    showMsg('followMsg', 'Loyalty pledged. The senate recognizes you.', 'success');
+    completeTask(2);
+    state.followConfirmed = true;
+    setTimeout(() => activateTask(3), 600);
+  }
+
+  function confirmComment() {
+    if (!state.followConfirmed) {
+      showMsg('commentMsg', 'Complete all prior trials before this one.', 'error'); return;
+    }
+    showMsg('commentMsg', 'Your words are inscribed in the senate records.', 'success');
+    completeTask(3);
+    state.commentConfirmed = true;
+    setTimeout(() => {
+      document.getElementById('tasksWrap').style.display = 'none';
+      const fm = document.getElementById('finalMessage');
+      fm.classList.add('show');
+      fm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 800);
+  }
+</script>
+</body>
+</html>
