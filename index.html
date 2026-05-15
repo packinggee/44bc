@@ -1024,7 +1024,7 @@
   .task-input {
     padding: 12px 16px;
   }
-}
+}  
 
   /* SPECIAL ROMAN BORDER TOP */
   .border-top-roman {
@@ -1243,7 +1243,7 @@
         <div class="task-content">
           <div class="task-title">Like the Sacred Post</div>
           <div class="task-desc">Like the official @44_BC_ post on X to show your allegiance to the senate.</div>
-          <a href="https://x.com/44_BC_" target="_blank" class="task-link" onclick="markLiked()">⬥ Like on X</a>
+          <a href="https://x.com/44_BC_/status/2055294045916701086?s=20" target="_blank" class="task-link" onclick="markLiked()">⬥ Like on X</a>
           <div class="validation-msg" id="likeMsg"></div>
           <button class="task-btn" id="likeConfirm" onclick="confirmLike()" style="margin-left:12px">I've Liked It</button>
         </div>
@@ -1268,13 +1268,27 @@
         <div class="task-num">IV</div>
         <div class="task-content">
           <div class="task-title">Inscribe Your Words</div>
-          <div class="task-desc">Comment on the 44BC teaser post on X. Leave your mark on the senate floor.</div>
-          <a href="https://x.com/44_BC_" target="_blank" class="task-link" onclick="markCommented()">⬥ Comment on the Post</a>
+          <div class="task-desc">Comment on the 44BC post on X. Leave your mark on the senate floor.</div>
+          <a href="https://x.com/44_BC_/status/2055294045916701086?s=20" target="_blank" class="task-link" onclick="markCommented()">⬥ Comment on the Post</a>
           <div class="validation-msg" id="commentMsg"></div>
           <button class="task-btn" id="commentConfirm" onclick="confirmComment()">I've Commented</button>
         </div>
         <div class="task-status" id="status3">IV</div>
       </div>
+
+      <!-- TASK 4: ETH ADDRESS -->
+      <div class="task-item active" id="task4">
+        <div class="task-num">V</div>
+        <div class="task-content">
+          <div class="task-title">What is your Ethereum address</div>
+          <div class="task-desc">Enter your ethereum wallet to complete your enlistment in the 44BC senate.</div>
+          <input type="text" class="task-input" id="walletInput" placeholder="0x...">
+          <div class="validation-msg" id="walletMsg"></div>
+          <button class="task-btn" onclick="submitWallet()">Complete Enlistment</button>
+        </div>
+        <div class="task-status" id="status4">V</div>
+      </div>
+
 
     </div>
 
@@ -1306,7 +1320,7 @@
     <li><a href="#details">Collection</a></li>
     <li><a href="#mint">Mint</a></li>
     <li><a href="game.html">Arena</a></li>
-    <li><a href="https://x.com/44_BC_" target="_blank">X / Twitter</a></li>
+    <li><a href="x.com/44_BC_" target="_blank">X / Twitter</a></li>
     <li><a href="opensea.io" target="_blank">OpenSea</a></li>
   </ul>
   <p class="footer-copy">© MMXXVI — 44BC. All rights reserved. <em>Sic transit gloria mundi.</em></p>
@@ -1349,6 +1363,7 @@
     followConfirmed: false,
     commented: false,
     commentConfirmed: false,
+    walletSubmit: false,
   };
 
   function activateTask(id) {
@@ -1416,13 +1431,38 @@
     showMsg('commentMsg', 'Your words are inscribed in the senate records.', 'success');
     completeTask(3);
     state.commentConfirmed = true;
-    setTimeout(() => {
-      document.getElementById('tasksWrap').style.display = 'none';
-      const fm = document.getElementById('finalMessage');
-      fm.classList.add('show');
-      fm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 800);
+    setTimeout(() => activateTask(4), 600);
   }
+     
+     function submitWallet(){
+      if (!state.commentConfirmed){
+        showMsg('walletMsg', 'Complete the previous trials before submitting your treasury.', 'error');
+        return;
+      }
+      const wallet = document.getElementById('walletInput').value.trim();
+      if (!/^0x[a-fA-f0-9]{40}$/.test(wallet)){
+        showMsg('walletMsg', 'Enter a valid Ethereum wallet address.', 'error');
+        return;
+      }
+
+      showMsg('walletMsg', 'Treasury sealed. your wallet has been recorded by the senate.', 'success');
+
+      completeTask(4);
+
+      setTimeout(() => {
+        document.getElementById('taskWrap').style.display = 'none';
+
+        const fm = document.getElementById('finalMessage');
+
+        fm.classList.add('show');
+
+        fm.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        })
+      }, 800);
+
+     }
 </script>
 </body>
 </html>
